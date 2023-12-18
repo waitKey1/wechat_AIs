@@ -1,7 +1,7 @@
 # encoding:utf-8
 
 import time
-
+import openai.error
 import openai
 
 import requests
@@ -42,8 +42,6 @@ class ChatGPTBot(Bot, OpenAIImage):
             "request_timeout": conf().get("request_timeout", None),  # 请求超时时间，openai接口默认设置为600，对于难问题一般需要较长时间
             "timeout": conf().get("request_timeout", None),  # 重试超时时间，在这个时间内，将会自动重试
         }
-
-
 
     def reply(self, query, context=None):
         # acquire reply content
@@ -133,22 +131,22 @@ class ChatGPTBot(Bot, OpenAIImage):
         except Exception as e:
             need_retry = retry_count < 2
             result = {"completion_tokens": 0, "content": "我现在有点累了，等会再来吧"}
-            if isinstance(e, openai.RateLimitError):
+            if isinstance(e, openai.error.RateLimitError):
                 logger.warn("[CHATGPT] RateLimitError: {}".format(e))
                 result["content"] = "提问太快啦，请休息一下再问我吧"
                 if need_retry:
                     time.sleep(20)
-            elif isinstance(e, openai.Timeout):
+            elif isinstance(e, openai.error.Timeout):
                 logger.warn("[CHATGPT] Timeout: {}".format(e))
                 result["content"] = "我没有收到你的消息"
                 if need_retry:
                     time.sleep(5)
-            elif isinstance(e, openai.APIError):
+            elif isinstance(e, openai.error.APIError):
                 logger.warn("[CHATGPT] Bad Gateway: {}".format(e))
                 result["content"] = "请再问我一次"
                 if need_retry:
                     time.sleep(10)
-            elif isinstance(e, openai.APIConnectionError):
+            elif isinstance(e, openai.error.APIConnectionError):
                 logger.warn("[CHATGPT] APIConnectionError: {}".format(e))
                 result["content"] = "我连接不到你的网络"
                 if need_retry:
