@@ -1,0 +1,10 @@
+openai==0.27.8
+HTMLParser
+PyQRCode
+qrcode
+requests
+chardet
+Pillow
+pre-commit
+web.py
+tiktoken
