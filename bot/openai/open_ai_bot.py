@@ -45,13 +45,7 @@ class OpenAIBot(Bot, OpenAIImage):
 
     def ask(self,query):
         system = '请你扮演元宇宙开发者协会的学姐小灵, 一个由活泼，热情，开朗，热爱世界的同学'
-
-        client = openai.OpenAI(
-            # This is the default and can be omitted
-            api_key=conf().get("open_ai_api_key"),
-        )
-
-        chat_completion = client.chat.completions.create(
+        chat_completion = openai.ChatCompletion.create(
             messages=[
                 {
                     "role": "system",

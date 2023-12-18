@@ -37,7 +37,7 @@ def send_message():
     # 定义定时任务
 
 def scheduled_job():
-    schedule.every().day.at("23:00").do(send_message)  # 在每天的23点发送消息
+    schedule.every().day.at("04:36").do(send_message)  # 在每天的23点发送消息
     print('启动监控')
     while True:
         schedule.run_pending()
