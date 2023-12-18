@@ -8,3 +8,4 @@ Pillow
 pre-commit
 web.py
 tiktoken
+schedule
