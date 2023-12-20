@@ -43,8 +43,8 @@ class OpenAIBot(Bot, OpenAIImage):
             "stop": ["\n\n\n"],
         }
 
-    def ask(self,query):
-        system = '请你扮演元宇宙开发者协会的学姐小灵, 一个由活泼，热情，开朗，热爱世界的同学'
+    def ask(self,query,model="gpt-3.5-1106"):
+        system = '请你扮演元宇宙开发者协会的学姐小灵, 一个活泼，热情，开朗，热爱这个世界的漂亮小姐姐'
         chat_completion = openai.ChatCompletion.create(
             messages=[
                 {
@@ -56,7 +56,8 @@ class OpenAIBot(Bot, OpenAIImage):
                     "content": query,
                 }
             ],
-            model="gpt-4-1106-preview",
+           # model="gpt-4-1106-preview",
+            model=model,
         )
         # print(chat_completion)
         return chat_completion.choices[0].message.content
