@@ -21,7 +21,7 @@ user_session = dict()
 class OpenAIBot(Bot, OpenAIImage):
     def __init__(self):
         super().__init__()
-        load_config()
+      #  load_config()
         openai.api_key = conf().get("open_ai_api_key")
 
         if conf().get("open_ai_api_base"):

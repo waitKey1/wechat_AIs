@@ -4,7 +4,7 @@ import schedule
 import time
 import threading
 def send_Evening_message():
-    global bot
+
 
     gptbot = OpenAIBot()
     model="gpt-4-1106-preview"
@@ -38,7 +38,6 @@ def send_Evening_message():
     # 定义定时任务
 
 def send_Morning_message():
-    global bot
 
     gptbot = OpenAIBot()
     model="gpt-4-1106-preview"
@@ -60,29 +59,29 @@ def send_Morning_message():
             # 只找到一个匹配的群组
             chatroom = chatrooms[0]
             receiver = chatroom['UserName']
+            itchat.send(resText, toUserName=receiver)
             print("找到唯一的匹配群组，其 UserName 是：", receiver)
         else:
             # 找到多个匹配的群组
             print("找到多个匹配的群组，请选择要操作的群组：")
             for index, room in enumerate(chatrooms):
                 print(f"{index + 1}. {room['NickName']}")
-            receiver = chatrooms[0]['UserName']
+                receiver = chatrooms[index]['UserName']
         # 发送消息给群组
-        itchat.send(resText, toUserName=receiver)
+                itchat.send(resText, toUserName=receiver)
     # 定义定时任务
 
 
 def scheduled_job():
     schedule.every().day.at("15:00").do(send_Evening_message)  # 在每天的23点发送消息
-    schedule.every().day.at("00:00").do(send_Morning_message)  # 在每天的23点发送消息
+    schedule.every().day.at("00:00").do(send_Morning_message)  # 在每天的8点发送消息
     print('启动监控')
     while True:
         schedule.run_pending()
         time.sleep(1)
 
 def init():
-    global bot
-    bot=OpenAIBot()
+    pass
 
 def strategyV1():
     #
