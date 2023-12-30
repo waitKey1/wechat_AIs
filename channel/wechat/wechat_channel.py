@@ -9,9 +9,9 @@ import json
 import os
 import threading
 import time
-import schedule
+
 import requests
-from bot.openai.open_ai_bot import OpenAIBot
+
 from bridge.context import *
 from bridge.reply import *
 from channel.chat_channel import ChatChannel
@@ -23,7 +23,7 @@ from common.time_check import time_checker
 from config import conf, get_appdata_dir
 from lib import itchat
 from lib.itchat.content import *
-
+from strategy.wechat_strategy import strategyV1
 
 @itchat.msg_register([TEXT, VOICE, PICTURE, NOTE, ATTACHMENT, SHARING])
 def handler_single_msg(msg):
@@ -110,16 +110,11 @@ class WechatChannel(ChatChannel):
         super().__init__()
         self.receivedMsgs = ExpiredDict(60 * 60)
 
-
-
-
     def startup(self):
         itchat.instance.receivingRetryCount = 600  # 修改断线超时时间
         # login by scan QRCode
         hotReload = conf().get("hot_reload", False)
         status_path = os.path.join(get_appdata_dir(), "itchat.pkl")
-        print(status_path)
-        print(hotReload)
         itchat.auto_login(
             enableCmdQR=2,
             hotReload=hotReload,
@@ -129,8 +124,7 @@ class WechatChannel(ChatChannel):
         self.user_id = itchat.instance.storageClass.userName
         self.name = itchat.instance.storageClass.nickName
         logger.info("Wechat login success, user_id: {}, nickname: {}".format(self.user_id, self.name))
-
-
+        strategyV1(itchat)
         # start message listener
         itchat.run()
 
@@ -146,12 +140,9 @@ class WechatChannel(ChatChannel):
     #        origin_ctype: 原始消息类型，语音转文字后，私聊时如果匹配前缀失败，会根据初始消息是否是语音来放宽触发规则
     #        desire_rtype: 希望回复类型，默认是文本回复，设置为ReplyType.VOICE是语音回复
 
-
     @time_checker
     @_check
     def handle_single(self, cmsg: ChatMessage):
-       # print('接收参数cmsg：' + str(cmsg))
-
         # filter system message
         if cmsg.other_user_id in ["weixin"]:
             return
@@ -174,7 +165,6 @@ class WechatChannel(ChatChannel):
     @time_checker
     @_check
     def handle_group(self, cmsg: ChatMessage):
-       # print('群聊接收参数cmsg：' + str(cmsg))
         if cmsg.ctype == ContextType.VOICE:
             if conf().get("group_speech_recognition") != True:
                 return
@@ -196,14 +186,10 @@ class WechatChannel(ChatChannel):
 
     # 统一的发送函数，每个Channel自行实现，根据reply的type字段发送不同类型的消息
     def send(self, reply: Reply, context: Context):
-        print('发送参数reply：'+str(reply))
-        print('发送参数context：' + str(context))
         receiver = context["receiver"]
         if reply.type == ReplyType.TEXT:
             itchat.send(reply.content, toUserName=receiver)
             logger.info("[WX] sendMsg={}, receiver={}".format(reply, receiver))
-
-
         elif reply.type == ReplyType.ERROR or reply.type == ReplyType.INFO:
             itchat.send(reply.content, toUserName=receiver)
             logger.info("[WX] sendMsg={}, receiver={}".format(reply, receiver))
