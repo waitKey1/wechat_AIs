@@ -8,7 +8,7 @@ from channel import channel_factory
 from common import const
 from config import load_config
 from plugins import *
-from strategy import *
+
 
 def sigterm_handler_wrap(_signo):
     old_handler = signal.getsignal(_signo)
@@ -46,8 +46,7 @@ def run():
             PluginManager().load_plugins()
 
 
-        strategyV1()
-        # startup channel
+
         channel.startup()
     except Exception as e:
         logger.error("App startup failed!")

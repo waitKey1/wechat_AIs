@@ -117,8 +117,8 @@ def send_Morning_message(itchat):
         print('send_Morning_message')
 
 def scheduled_job(itchat):
-    schedule.every().day.at("15:00").do(send_Evening_message,itchat)  # 在每天的23点发送消息
-    schedule.every().day.at("00:00").do(send_Morning_message,itchat)  # 在每天的8点发送消息
+    schedule.every().day.at("15:47").do(send_Evening_message,itchat)  # 在每天的23点发送消息
+    schedule.every().day.at("23:48").do(send_Morning_message,itchat)  # 在每天的8点发送消息
     print('启动监控')
     while True:
         schedule.run_pending()
